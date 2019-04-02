@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <script src="js/bundle.js"></script>
+    <script src="../socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="css/style.css"></link>
+<script>
+  const socket = io();
+</script>
+  </head>
+  <body>
+    <div class="userLogin">
+      <form action="">
+        <input type="text" id="username"></input>
+        <input type="submit"></input>
+      </form>
+    </div>
+
+    <div class="chatDisplay hide">
+      <div id="messages">
+
+      </div>
+
+      <div id="allUsers">
+
+      </div>
+
+        <div class="messageForm">
+          <form action="">
+            <input type="text" id="message"></input>
+            <input type="submit"></input>
+          </form>
+        </div>
+    </div>
+  </body>
+</html>

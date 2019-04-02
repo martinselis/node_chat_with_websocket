@@ -1,0 +1,27 @@
+
+
+.chatDisplay {
+  width: 70;
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+}
+
+#messages {
+  height: 300px;
+  width: 100%;
+  border: 1px solid black;
+}
+
+#allUsers {
+  width: 100px;
+  height: 300px;
+  border: 1px solid black;
+}
+
+.messageForm {
+  grid-row: 3/4;
+}
+
+.hide {
+  display:none;
+}
