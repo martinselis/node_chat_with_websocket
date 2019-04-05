@@ -1,17 +1,23 @@
-  // socket = io();
+const MessagesView = function (messagesDiv) {
+  this.messagesDiv = messagesDiv;
+}
 
-  // const form = document.querySelector("form");
-  // form.addEventListener('submit', (event)=> {
-  //   event.preventDefault();
-  //   const textField = document.querySelector("#message")
-  //   socket.emit('chat message', textField.value);
-  //   textField.value = "";
-  // })
-  // 
+MessagesView.prototype.bindEvents = function () {
+  socket.on('chat message', (data) => {
+    this.displayMessage(data)
+  })
+};
 
-  // const msgDiv = document.querySelector('#messages');
-  // socket.on('chat message', function(msg){
-  //     const newMsg = document.createElement("p")
-  //     newMsg.textContent = msg;
-  //     msgDiv.appendChild(newMsg);
-  //   });
+MessagesView.prototype.displayMessage = function (data) {
+  const messageContent = `${data.user}: ${data.message}`
+  const messageElement = this.createElement("p", messageContent);
+  this.messagesDiv.appendChild(messageElement);
+};
+
+MessagesView.prototype.createElement = function (elementName, text) {
+  const newElement = document.createElement(elementName);
+  newElement.textContent = text;
+  return newElement;
+};
+
+module.exports = MessagesView;

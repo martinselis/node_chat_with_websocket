@@ -11,7 +11,8 @@ UserView.prototype.addEventListener = function () {
 
   form.addEventListener('submit', (event) => {
     event.preventDefault();
-    this.publishUsername(event.target.username.value)
+    const username = event.target.username.value;
+    this.publishUsername(username)
     this.hideMenu();
   })
 };

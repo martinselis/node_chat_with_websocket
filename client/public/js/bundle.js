@@ -115,7 +115,29 @@ eval("const PubSub = {\n  publish: function(channel, payload) {\n    const event
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("const PubSub = __webpack_require__(/*! ../helpers/pub_sub.js */ \"./client/src/helpers/pub_sub.js\")\n\nconst ChatView = function() {\n  this.element = document.querySelector('.chatDisplay');\n  this.bindEvents();\n  this.user;\n}\n\nChatView.prototype.bindEvents = function () {\n  PubSub.subscribe('user-login-view', (event) => {\n    this.user = event.detail;\n    this.element.classList.remove('hide');\n    this.openSocket();\n  })\n};\n\nChatView.prototype.openSocket = function () {\n  socket.emit('user-login', this.user)\n};\n\nmodule.exports = ChatView;\n\n\n//# sourceURL=webpack:///./client/src/views/chat_view.js?");
+eval("const MessagesView = __webpack_require__(/*! ./messages_view.js */ \"./client/src/views/messages_view.js\");\nconst MessageForm = __webpack_require__(/*! ./messages_form.js */ \"./client/src/views/messages_form.js\");\nconst UserPanelView = __webpack_require__(/*! ./username_view.js */ \"./client/src/views/username_view.js\");\n\nconst PubSub = __webpack_require__(/*! ../helpers/pub_sub.js */ \"./client/src/helpers/pub_sub.js\")\n\nconst ChatView = function() {\n  this.element = document.querySelector('.chatDisplay');\n  this.bindEvents();\n  this.user;\n}\n\nChatView.prototype.bindEvents = function () {\n  PubSub.subscribe('user-login-view', (event) => {\n    this.user = event.detail;\n    this.element.classList.remove('hide');\n    this.openSocket();\n    this.renderViews();\n  })\n};\n\nChatView.prototype.openSocket = function () {\n  socket.emit('user-login', this.user)\n};\n\nChatView.prototype.renderViews = function () {\n  const messagesDiv = document.querySelector('#messages');\n  const messagesView = new MessagesView(messagesDiv);\n  messagesView.bindEvents();\n\n  const messageFormDiv = document.querySelector('.messageForm');\n  const messageForm = new MessageForm(messageFormDiv);\n  messageForm.bindEvents();\n\n  const userPanelDiv = document.querySelector('#userPanel');\n  const userPanel = new UserPanelView(userPanelDiv);\n  userPanel.bindEvents();\n\n};\n\nmodule.exports = ChatView;\n\n\n//# sourceURL=webpack:///./client/src/views/chat_view.js?");
+
+/***/ }),
+
+/***/ "./client/src/views/messages_form.js":
+/*!*******************************************!*\
+  !*** ./client/src/views/messages_form.js ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+eval("const MessageForm = function (formDiv) {\n  this.formDiv = formDiv;\n  this.form = document.querySelector('#msgForm');\n\n}\n\nMessageForm.prototype.bindEvents = function () {\n  this.form.addEventListener('submit', this.sendChatMessages)\n};\n\nMessageForm.prototype.sendChatMessages = function (event) {\n\n  const chatForm = document.querySelector(\"#message\");\n  event.preventDefault();\n  socket.emit('user chatting', this.message.value);\n  this.message.value = \"\";\n};\n\nmodule.exports = MessageForm;\n\n\n//# sourceURL=webpack:///./client/src/views/messages_form.js?");
+
+/***/ }),
+
+/***/ "./client/src/views/messages_view.js":
+/*!*******************************************!*\
+  !*** ./client/src/views/messages_view.js ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+eval("const MessagesView = function (messagesDiv) {\n  this.messagesDiv = messagesDiv;\n}\n\nMessagesView.prototype.bindEvents = function () {\n  socket.on('chat message', (data) => {\n    this.displayMessage(data)\n  })\n};\n\nMessagesView.prototype.displayMessage = function (data) {\n  const messageContent = `${data.user}: ${data.message}`\n  const messageElement = this.createElement(\"p\", messageContent);\n  this.messagesDiv.appendChild(messageElement);\n};\n\nMessagesView.prototype.createElement = function (elementName, text) {\n  const newElement = document.createElement(elementName);\n  newElement.textContent = text;\n  return newElement;\n};\n\nmodule.exports = MessagesView;\n\n\n//# sourceURL=webpack:///./client/src/views/messages_view.js?");
 
 /***/ }),
 
@@ -126,7 +148,18 @@ eval("const PubSub = __webpack_require__(/*! ../helpers/pub_sub.js */ \"./client
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("const PubSub = __webpack_require__(/*! ../helpers/pub_sub.js */ \"./client/src/helpers/pub_sub.js\")\n\nconst UserView = function() {\n  this.element = document.querySelector('.userLogin');\n  this.addEventListener()\n}\n\nUserView.prototype.addEventListener = function () {\n  const form = document.querySelector('.userLogin > form');\n  const userElement = this.element;\n\n  form.addEventListener('submit', (event) => {\n    event.preventDefault();\n    this.publishUsername(event.target.username.value)\n    this.hideMenu();\n  })\n};\n\nUserView.prototype.publishUsername = function (username) {\n  PubSub.publish('user-login-view', username);\n};\n\nUserView.prototype.hideMenu = function () {\n  this.element.classList.add('hide')\n};\n\n\nmodule.exports = UserView;\n\n\n//# sourceURL=webpack:///./client/src/views/user_login_view.js?");
+eval("const PubSub = __webpack_require__(/*! ../helpers/pub_sub.js */ \"./client/src/helpers/pub_sub.js\")\n\nconst UserView = function() {\n  this.element = document.querySelector('.userLogin');\n  this.addEventListener()\n}\n\nUserView.prototype.addEventListener = function () {\n  const form = document.querySelector('.userLogin > form');\n  const userElement = this.element;\n\n  form.addEventListener('submit', (event) => {\n    event.preventDefault();\n    const username = event.target.username.value;\n    this.publishUsername(username)\n    this.hideMenu();\n  })\n};\n\nUserView.prototype.publishUsername = function (username) {\n  PubSub.publish('user-login-view', username);\n};\n\nUserView.prototype.hideMenu = function () {\n  this.element.classList.add('hide')\n};\n\n\nmodule.exports = UserView;\n\n\n//# sourceURL=webpack:///./client/src/views/user_login_view.js?");
+
+/***/ }),
+
+/***/ "./client/src/views/username_view.js":
+/*!*******************************************!*\
+  !*** ./client/src/views/username_view.js ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+eval("const UserPanel = function(userPanel) {\n  this.userPanel = userPanel;\n}\n\nUserPanel.prototype.bindEvents = function () {\n  socket.on('all-users', (users) => {\n    this.renderUsers(users)\n  } );\n};\n\nUserPanel.prototype.renderUsers = function (users) {\n  this.userPanel.innerHTML = \"\";\n  if (users.length > 0) {\n    for (let user of users) {\n      const p = this.createElement(\"p\", user);\n      this.userPanel.appendChild(p);\n    }\n  }\n};\n\nUserPanel.prototype.createElement = function (name, text) {\n  const newElement = document.createElement(name);\n  newElement.textContent = text;\n  return newElement;\n};\n\nmodule.exports = UserPanel;\n\n\n//# sourceURL=webpack:///./client/src/views/username_view.js?");
 
 /***/ })
 
