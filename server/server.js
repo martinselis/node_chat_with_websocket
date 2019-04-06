@@ -3,8 +3,8 @@ const app = express();
 const path = require("path");
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
-const Users = require('./helpers/users.js');
-const User = require('./helpers/user.js');
+const Users = require('./users/users.js');
+const User = require('./users/user.js');
 
 const publicPath = path.join(__dirname, "../client/public");
 app.use(express.static(publicPath));
@@ -12,19 +12,23 @@ app.use(express.static(publicPath));
 app.get('/', (req, res) => {
   console.log('handled it')
 })
+const port = process.env.PORT;
+
+console.log(port)
 
 let users = new Users();
 
 io.on('connection', function(socket) {
   let user = new User(socket)
-  console.log('user has connected')
 
   user.socket.on('user-login', function(name) {
     user.name = name;
     users.add(user.name);
 
-    console.log(users.all());
     io.emit('all-users', users.all());
+    io.emit('chat message',
+    { "user": "System",
+      "message": `${user.name} has joined` })
   })
 
   user.socket.on('user chatting', function(msg){
@@ -33,9 +37,11 @@ io.on('connection', function(socket) {
       "message": msg })})
 
   user.socket.on('disconnect', () => {
-    console.log(`user ${user.name} disconnected`);
     users.remove(user.name)
     io.emit('all-users', users.all());
+    io.emit('chat message',
+    { "user": "System",
+      "message": `${user.name} has disconnected` })
   })
 });
 
